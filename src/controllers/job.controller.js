@@ -37,6 +37,7 @@ const postJob = asyncHandler(async (req, res) => {
 });
 
 const getAllJobs = asyncHandler(async (req, res) => {
+
   const { search } = req.query;
   const query = search
     ? {
@@ -46,6 +47,8 @@ const getAllJobs = asyncHandler(async (req, res) => {
         },
       }
     : {};
+
+    
   const jobs = await Job.find(query);
 
   return res
