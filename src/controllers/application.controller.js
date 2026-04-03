@@ -4,12 +4,12 @@ import { ApiError } from "../helpers/ApiError.js";
 import { Application } from "../models/Application.js";
 import mongoose from "mongoose";
 import { Job } from "../models/Job.js";
-import { ROLES } from "../constants/constants.js";
+import { ROLES, APPLICATION_STATUS } from "../constants/constants.js";
 import { cloudinary } from "../constants/cloudinary.js";
 import fs from "fs";
 
 const applyJob = asyncHandler(async (req, res) => {
-  const { jobId } = req.body;
+  const jobId = req.params.id;
 
   if (!mongoose.Types.ObjectId.isValid(jobId)) {
     throw new ApiError(400, "Invalid job id");
@@ -38,19 +38,29 @@ const applyJob = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Resume file is required");
   }
 
-  const uploadResult = await cloudinary.uploader.upload(filePath, {
-    resource_type: "raw",
-    folder: "resumes",
-  });
+  console.log("FILE PATH:", filePath);
 
-  fs.unlinkSync(filePath);
+  let uploadResult;
+  try {
+    uploadResult = await cloudinary.uploader.upload(filePath, {
+      resource_type: "raw",
+      folder: "resumes",
+    });
+  } catch (err) {
+    console.error("Cloudinary Error:", err);
+    throw new ApiError(500, "File upload failed");
+  }
 
-  const resumeUrl = uploadResult.secure_url;
+  try {
+    fs.unlinkSync(filePath);
+  } catch (err) {
+    console.warn("File delete failed:", err.message);
+  }
 
   const application = await Application.create({
     jobId,
     applicantId: req.user._id,
-    resume: resumeUrl,
+    resume: uploadResult.secure_url,
   });
 
   return res
@@ -61,7 +71,7 @@ const applyJob = asyncHandler(async (req, res) => {
 });
 
 const getAllApplicants = asyncHandler(async (req, res) => {
-  const { jobId } = req.body;
+  const { jobId } = req.query;
 
   if (!mongoose.Types.ObjectId.isValid(jobId)) {
     throw new ApiError(400, "invalid job id");
@@ -83,9 +93,10 @@ const getAllApplicants = asyncHandler(async (req, res) => {
   if (applicants.length === 0) {
     throw new ApiError(404, "no applicants found");
   }
+
   return res
-    .status(201)
-    .json(new ApiResponse(201, "applicant fetched sucessfully ", applicants));
+    .status(200)
+    .json(new ApiResponse(200, "applicant fetched sucessfully", applicants));
 });
 
 const updateStatus = asyncHandler(async (req, res) => {
@@ -110,7 +121,7 @@ const updateStatus = asyncHandler(async (req, res) => {
     throw new ApiError(403, "Not authroized");
   }
 
-  const application = await Application.findByIdAndUpdate(
+  const application = await Application.findOneAndUpdate(
     { jobId, applicantId },
     { status },
     { new: true },
@@ -139,6 +150,23 @@ const myApplications = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "Applications fetched", applications));
 });
 
+const hasApplied = asyncHandler(async (req, res) => {
+  const { id: jobId } = req.params;
 
+  if (!mongoose.Types.ObjectId.isValid(jobId)) {
+    throw new ApiError(400, "Invalid job id");
+  }
 
-export { applyJob, getAllApplicants, updateStatus,myApplications };
+  const application = await Application.findOne({
+    jobId,
+    applicantId: req.user._id,
+  });
+
+  return res.status(200).json(
+    new ApiResponse(200, "Status fetched", {
+      hasApplied: !!application,
+    }),
+  );
+});
+
+export { applyJob, getAllApplicants, updateStatus, myApplications, hasApplied };

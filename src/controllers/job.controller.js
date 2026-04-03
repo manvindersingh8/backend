@@ -37,8 +37,11 @@ const postJob = asyncHandler(async (req, res) => {
 });
 
 const getAllJobs = asyncHandler(async (req, res) => {
+  const { search, page = 1, limit = 20 } = req.query;
 
-  const { search } = req.query;
+  const currentPage = Number(page);
+  const pageLimit = Number(limit);
+
   const query = search
     ? {
         title: {
@@ -47,13 +50,20 @@ const getAllJobs = asyncHandler(async (req, res) => {
         },
       }
     : {};
+  const skip = (currentPage - 1) * pageLimit;
 
-    
-  const jobs = await Job.find(query);
+  const jobs = await Job.find(query).skip(skip).limit(pageLimit);
+  const totalJobs = await Job.countDocuments(query);
+  const totalPage = Math.ceil(totalJobs / pageLimit);
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, "Jobs fetched successfully", jobs));
+  return res.status(200).json(
+    new ApiResponse(200, "Jobs fetched successfully", {
+      jobs,
+      currentPage,
+      totalJobs,
+      totalPage,
+    }),
+  );
 });
 
 const getJobById = asyncHandler(async (req, res) => {

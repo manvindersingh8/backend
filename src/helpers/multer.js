@@ -2,7 +2,7 @@ import multer from "multer";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "public/temp"); 
+    cb(null, "public/temp");
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + "-" + file.originalname);
@@ -10,11 +10,14 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-  if (file.mimetype === "application/pdf") {
+  if (
+    file.mimetype === "application/pdf" ||
+    file.originalname.endsWith(".pdf")
+  ) {
     cb(null, true);
   } else {
     cb(new Error("Only PDF allowed"), false);
   }
 };
 
-export const upload = multer({ storage,fileFilter });
+export const upload = multer({ storage, fileFilter });

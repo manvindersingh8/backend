@@ -15,7 +15,6 @@ const applicationSchema = new Schema(
     },
     resume: {
       type: String,
-      required: true,
     },
     status: {
       type: String,
@@ -24,9 +23,8 @@ const applicationSchema = new Schema(
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
-
 
 applicationSchema.index({ jobId: 1, applicantId: 1 }, { unique: true });
 

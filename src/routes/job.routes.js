@@ -13,11 +13,11 @@ const router = Router();
 
 router.route("/").get(getAllJobs).post(verifyJWT, authorizeRoles, postJob); // Recruiter: post a job
 
-router.get("/me", verifyJWT, authorizeRoles, myJobs); // Recruiter: view own jobs
+router.get("/my", verifyJWT, authorizeRoles, myJobs); // Recruiter: view own jobs
 
 router
   .route("/:id")
-  .get(verifyJWT, getJobById)
+  .get(getJobById)
   .delete(verifyJWT, authorizeRoles, deleteJob); // Recruiter: delete a job
 
 export default router;

@@ -4,7 +4,6 @@ import { asyncHandler } from "../helpers/asyncHandler.js";
 import { User } from "../models/User.js";
 import { refreshAndAccessToken } from "../helpers/refreshAndAccessToken.js";
 
-
 const registerUser = asyncHandler(async (req, res) => {
   const { username, fullname, email, password, role } = req.body;
 
@@ -42,7 +41,7 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 const loginUser = asyncHandler(async (req, res) => {
-  const { username , email, password } = req.body;
+  const { username, email, password } = req.body;
   if (!username && !email) {
     throw new ApiError(400, "All feilds are requried");
   }
@@ -131,48 +130,51 @@ const updateProfile = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, "updated", updatedUser));
 });
 
-const changePassword = asyncHandler(async(req,res)=>{
-        const {oldPassword , newPassword} = req.body
+const changePassword = asyncHandler(async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
 
-        if(!oldPassword || !newPassword){
-            throw new ApiError(400,'Both the feilds are required')
-        }
-        const user = await User.findById(req.user._id)
+  if (!oldPassword || !newPassword) {
+    throw new ApiError(400, "Both the feilds are required");
+  }
+  const user = await User.findById(req.user._id);
 
-        const isMatch = await user.comparePassword(oldPassword)
+  const isMatch = await user.comparePassword(oldPassword);
 
-        if(!isMatch){
-            throw new ApiError(401,'old password is incorrect')
-        }
+  if (!isMatch) {
+    throw new ApiError(401, "old password is incorrect");
+  }
 
-        if(oldPassword === newPassword){
-            throw new ApiError(400, 'new password must be different')
-        }
+  if (oldPassword === newPassword) {
+    throw new ApiError(400, "new password must be different");
+  }
 
-        user.password = newPassword
-        await user.save()
+  user.password = newPassword;
+  await user.save();
 
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Password has been changed"));
+});
 
-        return res
-        .status(200)
-        .json(new ApiResponse(200,'Password has been changed'))
-})
+const deleteUser = asyncHandler(async (req, res) => {
+  await User.findByIdAndDelete(req.user._id);
+  const options = {
+    httpOnly: true,
+    secure: true,
+  };
+  return res
+    .status(200)
+    .clearCookie("accessToken", options)
+    .clearCookie("refreshToken", options)
+    .json(new ApiResponse(200, "User deleted successfully"));
+});
 
-const deleteUser = asyncHandler(async(req,res)=>{
-    await User.findByIdAndDelete(req.user._id)
-    const options ={
-        httpOnly:true,
-        secure:true
-    }
-      return res
-        .status(200)
-        .clearCookie('accessToken', options)
-        .clearCookie('refreshToken', options)
-        .json(new ApiResponse(200, 'User deleted successfully'))
-})
-
-
-
-
-
-export { registerUser, loginUser, currentUser, logoutUser, updateProfile, changePassword , deleteUser};
+export {
+  registerUser,
+  loginUser,
+  currentUser,
+  logoutUser,
+  updateProfile,
+  changePassword,
+  deleteUser,
+};

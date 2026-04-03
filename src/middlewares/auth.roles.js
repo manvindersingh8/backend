@@ -17,4 +17,4 @@ const authorizeRoles = asyncHandler(async (req, res, next) => {
   next();
 });
 
-export {authorizeRoles}
+export { authorizeRoles };
