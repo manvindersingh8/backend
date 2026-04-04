@@ -111,7 +111,7 @@ const myJobs = asyncHandler(async (req, res) => {
   });
 
   if (jobs.length === 0) {
-    throw new ApiError(404, "No jobs found");
+    return res.status(200).json(new ApiResponse(200, "none found", []));
   }
 
   return res.status(200).json(new ApiResponse(200, "Jobs fetched", jobs));

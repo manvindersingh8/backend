@@ -91,7 +91,7 @@ const getAllApplicants = asyncHandler(async (req, res) => {
   );
 
   if (applicants.length === 0) {
-    throw new ApiError(404, "no applicants found");
+    return res.status(200).json(new ApiResponse(200, "none found", []));
   }
 
   return res
@@ -142,7 +142,7 @@ const myApplications = asyncHandler(async (req, res) => {
   }).populate("jobId", "title company location salary");
 
   if (applications.length === 0) {
-    throw new ApiError(404, "No applications found");
+    return res.status(200).json(new ApiResponse(200, "none found", []));
   }
 
   return res
