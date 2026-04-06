@@ -42,14 +42,10 @@ const getAllJobs = asyncHandler(async (req, res) => {
   const currentPage = Number(page);
   const pageLimit = Number(limit);
 
-  const query = search
-    ? {
-        title: {
-          $regex: search,
-          $options: "i",
-        },
-      }
-    : {};
+  const query = {
+    isDeleted: false,
+    ...(search ? { title: { $regex: search, $options: "i" } } : {}),
+  };
   const skip = (currentPage - 1) * pageLimit;
 
   const jobs = await Job.find(query).skip(skip).limit(pageLimit);
@@ -73,7 +69,7 @@ const getJobById = asyncHandler(async (req, res) => {
     throw new ApiError(400, "invalid job id");
   }
 
-  const job = await Job.findById(id);
+  const job = await Job.findOne({ _id: id, isDeleted: false });
 
   if (!job) {
     throw new ApiError(404, "job does not exist");
@@ -96,7 +92,7 @@ const deleteJob = asyncHandler(async (req, res) => {
   if (job.postedBy.toString() !== req.user._id.toString()) {
     throw new ApiError(403, "You are not allowed to delete this job");
   }
-  await job.deleteOne();
+  await Job.findByIdAndUpdate(id, { isDeleted: true });
 
   return res.status(200).json(new ApiResponse(200, "job deleted successfully"));
 });

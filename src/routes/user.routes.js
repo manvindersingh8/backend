@@ -1,15 +1,20 @@
-import { Router } from 'express'
-import { currentUser, updateProfile, changePassword, deleteUser } from '../controllers/user.controller.js'
-import { verifyJWT } from '../middlewares/verifyjwt.js'
+import { Router } from "express";
+import {
+  currentUser,
+  updateProfile,
+  changePassword,
+  deleteUser,
+} from "../controllers/user.controller.js";
+import { verifyJWT } from "../middlewares/verifyjwt.js";
 
-const router = Router()
+const router = Router();
 
 router
-  .route('/me')
+  .route("/me")
   .get(verifyJWT, currentUser)
   .patch(verifyJWT, updateProfile)
-  .delete(verifyJWT, deleteUser)
+  .delete(verifyJWT, deleteUser);
 
-router.patch('/change-password', verifyJWT, changePassword)
+router.patch("/change-password", verifyJWT, changePassword);
 
-export default router
+export default router;

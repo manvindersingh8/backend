@@ -68,6 +68,7 @@ const loginUser = asyncHandler(async (req, res) => {
   const options = {
     httpOnly: true,
     secure: false,
+    sameSite: "lax",
   };
 
   const createdUser = await User.findById(user._id).select(
@@ -99,7 +100,8 @@ const logoutUser = asyncHandler(async (req, res) => {
   );
   const options = {
     httpOnly: true,
-    secure: true,
+    secure: false,
+    sameSite: "lax",
   };
   return res
     .status(200)
@@ -160,7 +162,8 @@ const deleteUser = asyncHandler(async (req, res) => {
   await User.findByIdAndDelete(req.user._id);
   const options = {
     httpOnly: true,
-    secure: true,
+    secure: false,
+    sameSite: "lax",
   };
   return res
     .status(200)
