@@ -104,6 +104,7 @@ const myJobs = asyncHandler(async (req, res) => {
 
   const jobs = await Job.find({
     postedBy: req.user._id,
+    isDeleted: false,
   });
 
   if (jobs.length === 0) {

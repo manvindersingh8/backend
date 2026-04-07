@@ -114,7 +114,7 @@ const updateProfile = asyncHandler(async (req, res) => {
   const { email, username, fullname } = req.body;
 
   if (!email && !username && !fullname) {
-    throw ApiError(400, "Atleaast one feild is required");
+    throw new ApiError(400, "Atleaast one feild is required");
   }
 
   const updatedUser = await User.findByIdAndUpdate(
