@@ -1,298 +1,110 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import { Job } from "../models/Job.js";
+import {
+  JOB_TYPES,
+  WORK_MODES,
+  EXPERIENCE_LEVELS,
+} from "../constants/constants.js";
 
 dotenv.config();
 
 const seedJobs = async () => {
-    try{
+  try {
     await mongoose.connect(process.env.MONGO_URI);
     console.log("DB connected");
-    // 🔥 data sources
-  const titles = [
-  "Frontend Developer",
-  "Backend Developer",
-  "Full Stack Developer",
-  "DevOps Engineer",
-  "Software Engineer",
-  "Web Developer",
-  "Mobile App Developer",
-  "Android Developer",
-  "iOS Developer",
-  "React Developer",
-  "Node.js Developer",
-  "Java Developer",
-  "Python Developer",
-  "C++ Developer",
-  "PHP Developer",
-  "Ruby Developer",
-  "Golang Developer",
-  "Machine Learning Engineer",
-  "Data Scientist",
-  "Data Analyst",
-  "AI Engineer",
-  "Cloud Engineer",
-  "AWS Engineer",
-  "Azure Developer",
-  "Cybersecurity Analyst",
-  "Security Engineer",
-  "Blockchain Developer",
-  "Game Developer",
-  "UI Developer",
-  "UX Designer",
-  "UI/UX Designer",
-  "Product Designer",
-  "QA Engineer",
-  "Automation Tester",
-  "Manual Tester",
-  "Site Reliability Engineer",
-  "System Administrator",
-  "Database Administrator",
-  "Big Data Engineer",
-  "ETL Developer",
-  "Technical Support Engineer",
-  "IT Support Specialist",
-  "Network Engineer",
-  "Embedded Systems Engineer",
-  "Firmware Engineer",
-  "AR/VR Developer",
-  "Salesforce Developer",
-  "SAP Consultant",
-  "Business Analyst",
-  "Product Manager"
-];
 
-const companies = [
-  "Google",
-  "Amazon",
-  "Microsoft",
-  "Flipkart",
-  "Swiggy",
-  "Zomato",
-  "Meta",
-  "Apple",
-  "Netflix",
-  "Tesla",
-  "Infosys",
-  "TCS",
-  "Wipro",
-  "HCLTech",
-  "Accenture",
-  "Capgemini",
-  "Cognizant",
-  "IBM",
-  "Oracle",
-  "Adobe",
-  "Salesforce",
-  "Paytm",
-  "PhonePe",
-  "Razorpay",
-  "Freshworks",
-  "Zoho",
-  "Byju's",
-  "Ola",
-  "Uber",
-  "Airbnb",
-  "Spotify",
-  "Twitter",
-  "Snapchat",
-  "LinkedIn",
-  "Dropbox",
-  "Slack",
-  "Intel",
-  "Nvidia",
-  "AMD",
-  "Qualcomm",
-  "Samsung",
-  "Sony",
-  "Dell",
-  "HP",
-  "Lenovo",
-  "Cisco",
-  "Atlassian",
-  "Stripe",
-  "Square",
-  "Red Hat"
-];
+    const titles = [
+      "Frontend Developer",
+      "Backend Developer",
+      "Full Stack Developer",
+      "DevOps Engineer",
+      "Software Engineer",
+      "React Developer",
+      "Node.js Developer",
+    ];
 
- const locations = [
-  "Remote",
-  "Bangalore",
-  "Delhi",
-  "Hyderabad",
-  "Mumbai",
-  "Pune",
-  "Chennai",
-  "Kolkata",
-  "Gurgaon",
-  "Noida",
-  "Ahmedabad",
-  "Jaipur",
-  "Chandigarh",
-  "Indore",
-  "Lucknow",
-  "Coimbatore",
-  "Nagpur",
-  "Bhopal",
-  "Surat",
-  "Kochi",
-  "Visakhapatnam",
-  "Vadodara",
-  "Mysore",
-  "Trivandrum",
-  "Raipur",
-  "Patna",
-  "Ranchi",
-  "Bhubaneswar",
-  "Dehradun",
-  "Jodhpur",
-  "Amritsar",
-  "Agra",
-  "Varanasi",
-  "Kanpur",
-  "Faridabad",
-  "Ghaziabad",
-  "Panaji",
-  "Shillong",
-  "Gangtok",
-  "Itanagar",
-  "Imphal",
-  "Aizawl",
-  "Siliguri",
-  "Udaipur",
-  "Jamshedpur",
-  "Dhanbad",
-  "Gwalior",
-  "Meerut",
-  "Aligarh",
-  "Tirupati"
-];
+    const companies = [
+      "Google",
+      "Amazon",
+      "Microsoft",
+      "Flipkart",
+      "Zomato",
+      "Infosys",
+      "TCS",
+    ];
 
- const descriptions = [
-  "Build scalable web applications using modern tools and best coding practices.",
-  "Work with a talented team to develop efficient and reliable backend systems.",
-  "Design and implement user-friendly interfaces with attention to performance.",
-  "Collaborate across teams to deliver high-quality and maintainable software.",
-  "Develop robust APIs and services that power seamless user experiences.",
-  "Optimize application performance and ensure smooth deployment processes.",
-  "Create responsive and accessible UI components for modern web platforms.",
-  "Write clean, efficient, and well-documented code for long-term scalability.",
-  "Participate in code reviews and contribute to improving engineering quality.",
-  "Work on real-world projects that impact thousands of users globally.",
-  "Design secure and scalable solutions using industry best practices.",
-  "Build high-performance applications with a focus on reliability and speed.",
-  "Contribute to innovative features and continuously improve existing systems.",
-  "Debug and resolve complex technical issues in production environments.",
-  "Collaborate with designers to implement pixel-perfect user interfaces.",
-  "Develop microservices and integrate them with existing infrastructure.",
-  "Work in an agile team delivering features in fast-paced development cycles.",
-  "Ensure code quality through testing, reviews, and best engineering practices.",
-  "Build data-driven applications with efficient database management systems.",
-  "Implement authentication and authorization systems with strong security.",
-  "Maintain and improve application performance across multiple platforms.",
-  "Develop reusable components to streamline development across projects.",
-  "Integrate third-party services and APIs for enhanced functionality.",
-  "Work on cloud-based infrastructure and scalable deployment solutions.",
-  "Contribute ideas to improve product performance and user experience.",
-  "Analyze requirements and translate them into technical implementations.",
-  "Develop and maintain backend services with strong scalability in mind.",
-  "Ensure cross-browser compatibility and responsive design standards.",
-  "Write unit and integration tests to ensure application stability.",
-  "Collaborate closely with product managers to define new features.",
-  "Work on improving system architecture for better performance and scaling.",
-  "Implement real-time features and optimize data synchronization processes.",
-  "Participate in sprint planning and contribute to timely project delivery.",
-  "Create efficient database schemas and optimize complex queries.",
-  "Monitor application performance and fix bottlenecks proactively.",
-  "Work with modern frameworks to build dynamic and interactive interfaces.",
-  "Develop secure systems that handle sensitive user data responsibly.",
-  "Optimize frontend performance for faster loading and better UX.",
-  "Collaborate with QA teams to ensure bug-free production releases.",
-  "Build tools and automation to improve development workflows.",
-  "Implement RESTful APIs and ensure smooth communication between services.",
-  "Work on large-scale systems handling high traffic and real-time data.",
-  "Contribute to documentation for better team collaboration and onboarding.",
-  "Develop innovative solutions using emerging technologies and frameworks.",
-  "Ensure scalability and reliability of applications under heavy loads.",
-  "Work on improving developer experience through better tooling.",
-  "Design intuitive workflows that enhance user engagement and retention.",
-  "Develop full-stack features from concept to production deployment.",
-  "Collaborate with global teams across different time zones effectively.",
-  "Maintain code consistency using linting, formatting, and standards.",
-  "Work on performance optimization and memory management techniques.",
-  "Implement CI/CD pipelines for faster and reliable deployments.",
-  "Develop mobile-friendly applications with responsive design principles.",
-  "Write efficient algorithms to solve complex technical challenges.",
-  "Work on enhancing application security and data protection measures.",
-  "Build dashboards and analytics tools for data-driven decision making.",
-  "Collaborate with stakeholders to refine and improve product features.",
-  "Develop scalable event-driven architectures for modern applications.",
-  "Ensure system reliability with proper logging and monitoring tools.",
-  "Work on integrating machine learning models into production systems.",
-  "Improve application usability with thoughtful design and interaction.",
-  "Develop high-quality software aligned with business requirements.",
-  "Optimize backend systems for better throughput and lower latency.",
-  "Implement caching strategies to enhance application performance.",
-  "Collaborate in peer programming sessions to share knowledge and skills.",
-  "Work on improving accessibility and inclusivity in product design.",
-  "Develop modular and reusable code for faster development cycles.",
-  "Participate in technical discussions and architectural decisions.",
-  "Work with containerization tools to streamline deployment processes.",
-  "Ensure data integrity and consistency across distributed systems.",
-  "Develop features that enhance customer satisfaction and retention.",
-  "Write scalable code that adapts to growing user demands.",
-  "Collaborate with cross-functional teams to achieve project goals.",
-  "Implement logging and monitoring for better system observability.",
-  "Work on improving system resilience and fault tolerance.",
-  "Design APIs that are intuitive, consistent, and well-documented.",
-  "Contribute to improving team productivity and engineering standards.",
-  "Work on refactoring legacy systems for improved maintainability.",
-  "Develop high-impact features that drive product growth.",
-  "Ensure seamless integration between frontend and backend systems.",
-  "Collaborate with DevOps teams to maintain stable environments.",
-  "Work on continuous improvement of product performance and usability.",
-  "Develop solutions that handle large volumes of data efficiently.",
-  "Implement feature flags and experimentation for product innovation.",
-  "Work on enhancing application reliability and uptime.",
-  "Build scalable systems that support rapid business expansion.",
-  "Ensure compliance with industry standards and best practices.",
-  "Develop efficient workflows to reduce development time.",
-  "Work on improving load balancing and system distribution.",
-  "Collaborate with teams to deliver seamless user experiences.",
-  "Implement advanced debugging techniques for issue resolution.",
-  "Work on enhancing application responsiveness and speed.",
-  "Develop secure APIs with proper authentication mechanisms.",
-  "Contribute to building a strong and collaborative team culture.",
-  "Work on innovative solutions to solve complex business problems.",
-  "Ensure applications are optimized for different devices and screens.",
-  "Develop high-quality features with a focus on user satisfaction."
-];
+    const locations = ["Remote", "Delhi", "Bangalore", "Hyderabad", "Mumbai"];
+
+    const skillsPool = [
+      "React",
+      "Node.js",
+      "MongoDB",
+      "Express",
+      "JavaScript",
+      "TypeScript",
+      "AWS",
+      "Docker",
+      "Redis",
+      "GraphQL",
+    ];
+
+    const descriptions = [
+      "Develop scalable backend APIs and services using Node.js, ensuring performance, reliability, and security in production environments.",
+      "Build modern and responsive user interfaces with React while optimizing performance and maintaining clean, reusable components.",
+      "Collaborate with cross-functional teams to design, develop, and deploy high-quality software solutions for real-world applications.",
+      "Work on full-stack development including frontend, backend, and database integration with a focus on scalability and maintainability.",
+    ];
 
     const jobs = [];
 
-    for (let i = 0; i < 2000; i++) {
+    for (let i = 0; i < 200; i++) {
+      const minSalary = Math.floor(Math.random() * 5) * 5 + 20; // 20–40
+      const maxSalary = minSalary + Math.floor(Math.random() * 20) + 10;
+
+      const randomSkills = skillsPool
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 3);
+
       jobs.push({
         title: titles[Math.floor(Math.random() * titles.length)],
-        company: companies[Math.floor(Math.random() * companies.length)],
-        location: locations[Math.floor(Math.random() * locations.length)],
-
-        // 💰 salary between 50–100
-        salary: Math.floor(Math.random() * (100 - 50 + 1)) + 50,
-
         description:
           descriptions[Math.floor(Math.random() * descriptions.length)],
-          postedBy : "69ca8354ecc2e5d247685c14"
+
+        salary: {
+          min: minSalary,
+          max: maxSalary,
+        },
+
+        location: locations[Math.floor(Math.random() * locations.length)],
+        company: companies[Math.floor(Math.random() * companies.length)],
+
+        experience:
+          Object.values(EXPERIENCE_LEVELS)[
+            Math.floor(Math.random() * Object.values(EXPERIENCE_LEVELS).length)
+          ],
+
+        jobType:
+          Object.values(JOB_TYPES)[
+            Math.floor(Math.random() * Object.values(JOB_TYPES).length)
+          ],
+
+        workMode:
+          Object.values(WORK_MODES)[
+            Math.floor(Math.random() * Object.values(WORK_MODES).length)
+          ],
+
+        skills: randomSkills,
+
+        postedBy: "69e0be3c0c6b4d7a85a593fb", // replace with real user ID
       });
     }
 
-    // ❗ clear old data (optional)
-    await Job.deleteMany();
+    await Job.deleteMany(); // optional
 
-    // ✅ insert
     await Job.insertMany(jobs);
-    console.log("Count after insert:", await Job.countDocuments());
 
-    console.log("✅ Jobs seeded successfully");
+    console.log("✅ Jobs seeded successfully:", jobs.length);
 
     process.exit();
   } catch (error) {

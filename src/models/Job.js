@@ -1,5 +1,9 @@
 import mongoose, { Schema } from "mongoose";
-
+import {
+  JOB_TYPES,
+  EXPERIENCE_LEVELS,
+  WORK_MODES,
+} from "../constants/constants.js";
 const jobSchema = new Schema(
   {
     title: {
@@ -18,11 +22,6 @@ const jobSchema = new Schema(
       lowercase: true,
       trim: true,
     },
-    salary: {
-      type: Number,
-      required: true,
-      min: 1,
-    },
     location: {
       type: String,
       required: true,
@@ -32,6 +31,40 @@ const jobSchema = new Schema(
       type: String,
       required: true,
       trim: true,
+    },
+    jobType: {
+      type: String,
+      enum: Object.values(JOB_TYPES),
+      required: true,
+    },
+
+    experienceLevel: {
+      type: String,
+      enum: Object.values(EXPERIENCE_LEVELS),
+    },
+
+    salary: {
+      min: {
+        type: Number,
+        min: 0,
+      },
+      max: {
+        type: Number,
+        min: 0,
+      },
+    },
+
+    skills: [
+      {
+        type: String,
+        trim: true,
+        lowercase: true,
+      },
+    ],
+
+    workMode: {
+      type: String,
+      enum: Object.values(WORK_MODES),
     },
     postedBy: {
       type: Schema.Types.ObjectId,

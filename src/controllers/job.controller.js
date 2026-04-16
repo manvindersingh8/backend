@@ -3,31 +3,73 @@ import { ApiResponse } from "../helpers/ApiResponse.js";
 import { ApiError } from "../helpers/ApiError.js";
 import { Job } from "../models/Job.js";
 import mongoose from "mongoose";
-import { ROLES } from "../constants/constants.js";
-import { User } from "../models/User.js";
+import {
+  ROLES,
+  JOB_TYPES,
+  WORK_MODES,
+  EXPERIENCE_LEVELS,
+} from "../constants/constants.js";
 
 const postJob = asyncHandler(async (req, res) => {
-  const { title, description, salary, location, company, postedBy } = req.body;
-
-  if (
-    [title, description, location, company].some(
-      (feild) => !feild || feild.trim() === "",
-    )
-  ) {
-    throw new ApiError(400, "All feilds are required");
-  }
-  if (!salary) {
-    throw new ApiError(400, "Salary is required");
-  }
-  if (salary <= 0) {
-    throw new ApiError(400, "Salary cannot be 0 or below 0");
-  }
-  const job = await Job.create({
-    title: title.toLowerCase(),
-    description: description.toLowerCase(),
+  const {
+    title,
+    description,
     salary,
     location,
     company,
+    jobtype, 
+    skills,
+    workMode,
+    experience,
+  } = req.body;
+
+  // Required fields check (safe trim)
+  if (
+    [title, description, location, company].some(
+      (f) => typeof f !== "string" || !f.trim(),
+    )
+  ) {
+    throw new ApiError(400, "All fields are required");
+  }
+
+  // Salary validation (safe optional check)
+  if (
+    !salary ||
+    typeof salary.min !== "number" ||
+    typeof salary.max !== "number" ||
+    salary.min < 0 ||
+    salary.max < salary.min
+  ) {
+    throw new ApiError(400, "Invalid salary range");
+  }
+
+  // Skills validation
+  if (!Array.isArray(skills) || skills.length === 0) {
+    throw new ApiError(400, "Skills are required");
+  }
+
+  // Enum validation
+  const isValidEnum = (value, enumObj) =>
+    Object.values(enumObj).includes(value);
+
+  if (
+    !isValidEnum(jobtype, JOB_TYPES) ||
+    !isValidEnum(workMode, WORK_MODES) ||
+    !isValidEnum(experience, EXPERIENCE_LEVELS)
+  ) {
+    throw new ApiError(400, "Invalid job configuration");
+  }
+
+  const job = await Job.create({
+    title,
+    description,
+    salary,
+    location,
+    company,
+    jobType: jobtype, // ✅ FIX
+    skills,
+    workMode,
+    experienceLevel: experience, // ✅ FIX
     postedBy: req.user._id,
   });
 
@@ -35,7 +77,6 @@ const postJob = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, "Job created successfully", job));
 });
-
 const getAllJobs = asyncHandler(async (req, res) => {
   const { search, page = 1, limit = 20 } = req.query;
 
