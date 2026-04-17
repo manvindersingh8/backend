@@ -79,7 +79,7 @@ const seedJobs = async () => {
         location: locations[Math.floor(Math.random() * locations.length)],
         company: companies[Math.floor(Math.random() * companies.length)],
 
-        experience:
+        experienceLevel:
           Object.values(EXPERIENCE_LEVELS)[
             Math.floor(Math.random() * Object.values(EXPERIENCE_LEVELS).length)
           ],
@@ -96,7 +96,7 @@ const seedJobs = async () => {
 
         skills: randomSkills,
 
-        postedBy: "69e0be3c0c6b4d7a85a593fb", // replace with real user ID
+        postedBy: "69e1f42bce861a8a2c5d0e93", // replace with real user ID
       });
     }
 

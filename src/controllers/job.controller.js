@@ -17,10 +17,10 @@ const postJob = asyncHandler(async (req, res) => {
     salary,
     location,
     company,
-    jobtype, 
+    jobtype,
     skills,
     workMode,
-    experience,
+    experienceLevel,
   } = req.body;
 
   // Required fields check (safe trim)
@@ -55,7 +55,7 @@ const postJob = asyncHandler(async (req, res) => {
   if (
     !isValidEnum(jobtype, JOB_TYPES) ||
     !isValidEnum(workMode, WORK_MODES) ||
-    !isValidEnum(experience, EXPERIENCE_LEVELS)
+    !isValidEnum(experienceLevel, EXPERIENCE_LEVELS)
   ) {
     throw new ApiError(400, "Invalid job configuration");
   }
@@ -69,7 +69,7 @@ const postJob = asyncHandler(async (req, res) => {
     jobType: jobtype, // ✅ FIX
     skills,
     workMode,
-    experienceLevel: experience, // ✅ FIX
+    experienceLevel: experienceLevel, // ✅ FIX
     postedBy: req.user._id,
   });
 
@@ -78,18 +78,46 @@ const postJob = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "Job created successfully", job));
 });
 const getAllJobs = asyncHandler(async (req, res) => {
-  const { search, page = 1, limit = 20 } = req.query;
+  const {
+    search,
+    page = 1,
+    limit = 18,
+    location,
+    jobType,
+    experienceLevel,
+    workMode,
+  } = req.query;
 
   const currentPage = Number(page);
   const pageLimit = Number(limit);
 
+  // 🔥 Build dynamic query
   const query = {
     isDeleted: false,
-    ...(search ? { title: { $regex: search, $options: "i" } } : {}),
+
+    // Search (title)
+    ...(search && {
+      title: { $regex: search, $options: "i" },
+    }),
+
+    // Location (partial match)
+    ...(location && {
+      location: { $regex: location, $options: "i" },
+    }),
+
+    // Exact filters
+    ...(jobType && { jobType }),
+    ...(experienceLevel && { experienceLevel }),
+    ...(workMode && { workMode }),
   };
+
   const skip = (currentPage - 1) * pageLimit;
 
-  const jobs = await Job.find(query).skip(skip).limit(pageLimit);
+  const jobs = await Job.find(query)
+    .skip(skip)
+    .limit(pageLimit)
+    .sort({ createdAt: -1 });
+
   const totalJobs = await Job.countDocuments(query);
   const totalPage = Math.ceil(totalJobs / pageLimit);
 
