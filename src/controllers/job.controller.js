@@ -17,7 +17,7 @@ const postJob = asyncHandler(async (req, res) => {
     salary,
     location,
     company,
-    jobtype,
+    jobType,
     skills,
     workMode,
     experienceLevel,
@@ -53,7 +53,7 @@ const postJob = asyncHandler(async (req, res) => {
     Object.values(enumObj).includes(value);
 
   if (
-    !isValidEnum(jobtype, JOB_TYPES) ||
+    !isValidEnum(jobType, JOB_TYPES) ||
     !isValidEnum(workMode, WORK_MODES) ||
     !isValidEnum(experienceLevel, EXPERIENCE_LEVELS)
   ) {
@@ -66,10 +66,10 @@ const postJob = asyncHandler(async (req, res) => {
     salary,
     location,
     company,
-    jobType: jobtype, // ✅ FIX
+    jobType,
     skills,
     workMode,
-    experienceLevel: experienceLevel, // ✅ FIX
+    experienceLevel,
     postedBy: req.user._id,
   });
 
